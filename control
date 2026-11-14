@@ -1,0 +1,11 @@
+Package: com.taokk3.qianmian
+Name: 千面-VCAM 重编译版
+Description: 千面 VCam 源码重编译（iOS 16-26）
+Maintainer: Local
+Author: Local
+Section: Tweaks
+Depends: mobilesubstrate, firmware (>= 16.0), firmware (<< 27.0)
+Architecture: iphoneos-arm64e
+Version: 2.0.0
+Installed-Size: 2600
+Pre-Depends: rootless-compat (>= 0.9)

@@ -1,0 +1,38 @@
+name: build-qmvcam
+
+# 用 macOS 的 Apple ld64 产出真 arm64e slice（Windows 的 ld64.lld 做不到），
+# 再打成 xz + 单目录 deb，供 iOS 16–26 安装。
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Toolchain
+        run: |
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-path
+
+      - name: Build arm64 + arm64e and package
+        env:
+          VERSION: 4.1.${{ github.run_number }}
+        run: |
+          chmod +x build_macos.sh
+          ./build_macos.sh
+
+      - name: Verify
+        run: |
+          lipo -info build/qmvcam.dylib
+          codesign -dvvv build/qmvcam.dylib || true
+          python3 tools/check_sign.py build/qmvcam.dylib
+          ls -l dist/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: qmvcam-deb
+          path: dist/*.deb
+          if-no-files-found: error
